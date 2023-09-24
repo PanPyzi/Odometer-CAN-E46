@@ -1,26 +1,23 @@
 from socketcan import CanRawSocket, CanFrame
-import curses
+import json
+import threading
 
 #Init important vars
 
-stdscr= curses.initscr()
-curses.noecho()
-curses.cbreak()
-curses.curs_set(False)
 
 interface = "can0"
 socket = CanRawSocket(interface=interface)
 
 
-def read(w):
+
+def read():
+    SPEED_S=0
     THROTTLE_P=0
     RPM_D = 0
     WATER_T = -99
     CHECK_ENG = False
-    w.nodelay(True)
     ssss = ""
     while True:
-        file = open("can_drive_23.09.txt", 'a')
         frame = socket.recv()
         can_data_B=frame.data
         can_data = []
@@ -44,44 +41,29 @@ def read(w):
             pass
 
         elif can_id == '0x613':
-            SPEED_S=int(can_data[1], 16)*10
-            w.addstr(12, 1, "{0:8X}   [{1}]  {2} \n".format(frame.can_id, len(frame.data)," ".join(["{0:02X}".format(b) for b in frame.data])))
             pass
         elif can_id == '0x615':
             pass
         elif can_id == '0x1f0':
-            w.addstr(10, 1, "{0:8X}   [{1}]  {2} \n".format(frame.can_id, len(frame.data)," ".join(["{0:02X}".format(b) for b in frame.data])))
             pass
         elif can_id == '0x1f3':
             pass
         elif can_id == '0x153':#SPEED
-            SPEED_S= float(int(str(can_data[2])+str(can_data[1][1:]),16))/7.6
-            w.addstr(8, 1, "{0:8X}   [{1}]  {2} \n".format(frame.can_id, len(frame.data)," ".join(["{0:02X}".format(b) for b in frame.data])))
+            SPEED_S= int(float(int(str(can_data[2])+str(can_data[1][1:]),16))/7.6)
             pass
         elif can_id == '0x610':
             pass
         elif can_id == '0x1f5':
             pass
         elif can_id == '0x329':#WATER_TEMP (Byte1)
-            WATER_T=float((0.75*int(can_data[1],16)))-48.373
+            WATER_T=int(float((0.75*int(can_data[1],16)))-48.373)
             THROTTLE_P=int(int(can_data[5],16)/254)
 
-        w.addstr(0, 1, "SPEED: " + str(SPEED_S))
-        w.addstr(2,1,"RPM: "+str(RPM_D))
-        w.addstr(3,1,"Water: "+str(WATER_T))
-        w.addstr(4, 1, "Throttle: " + str(THROTTLE_P)+ "%")
-        w.addstr(5,1,"Check Engine:"+str(CHECK_ENG))
-        w.refresh()
+        data = {
+            "SPEED": SPEED_S,
+            "RPM": RPM_D,
+            "Water": WATER_T,
+        }
+        print(json.dumps(data))
 
-        try:
-            k=w.getkey()
-            if k=="s" & (can_id== "0x153" | can_id=="0x613" | can_id== "0x1f0"):
-                file2.write("{0:8X}   [{1}]  {2} \n".format(frame.can_id, len(frame.data)," ".join(["{0:02X}".format(b) for b in frame.data])))
-        except:
-            pass
-        file.close()
-        file2.close()
-
-
-
-curses.wrapper(read)
+read()
