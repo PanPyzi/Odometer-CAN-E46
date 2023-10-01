@@ -1,9 +1,6 @@
 from socketcan import CanRawSocket, CanFrame
 import json
-import threading
-
 #Init important vars
-
 
 interface = "can0"
 socket = CanRawSocket(interface=interface)

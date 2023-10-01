@@ -2,16 +2,16 @@
 <html>
 <head>
   <title>Zegar</title>
+  <link href="main.css" rel="stylesheet">
 </head>
-<body>
+<body style="background-color: black;">
   <!-- Ładowanie bibliotek -->
-  <script src="/node_modules/raphael/raphael.js"></script>
-  <script src="/node_modules/justgage/dist/justgage.min.js"></script>
-   <script src="/node_modules/highcharts/highcharts.js"></script>
   <script src="/socket.io/socket.io.js"></script>
 
-  <div id="RPM" style="min-width: 310px; max-width: 800px; height: 400px; margin: 0 auto"></div>
-  <div id="waterTempGauge" style="width:300px; height:200px;"></div>
+  <div id="canvas"">
+
+    <div id="footer"></div>
+  </div>
 
   <!-- Ładowanie twojego skryptu na końcu, by upewnić się, że wszystkie wymagane biblioteki są już załadowane -->
   <script src="client.js"></script>
