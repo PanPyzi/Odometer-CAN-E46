@@ -59,7 +59,7 @@ def read():
         data = {
             "SPEED": SPEED_S,
             "RPM": RPM_D,
-            "Water": WATER_T,
+            "WATER": WATER_T,
         }
         print(json.dumps(data))
 
