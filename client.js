@@ -108,6 +108,7 @@ let waterTempGauge = new JustGage({
         }
     }
 
+
     let fontSize = 120;
     ctx.font = fontSize + "px Arial";
 
@@ -132,6 +133,28 @@ let waterTempGauge = new JustGage({
     ctx.fillStyle = "white";
     ctx.fillText(speedometerText, speedometerX, speedometerY);
 
+    //Dodatkowe wskazniki kierunki itp
+    ctx.strokeRect(rectX, rectY+170, fixedRectWidth, fixedRectHeight);
+    width=40
+    height=40
+    //Prawo
+    ctx.fillStyle = colorR;
+    ctx.beginPath();
+    ctx.moveTo(rectX+255, rectY+175);
+    ctx.lineTo(rectX+255, rectY+175 + height);
+    ctx.lineTo(rectX+255 + width, rectY+175 + height / 2);
+    ctx.closePath();
+    ctx.fill();
+    //Lewo
+    ctx.fillStyle = colorL;
+    ctx.beginPath();
+    ctx.moveTo(rectX + width, rectY+175);
+    ctx.lineTo(rectX + width, rectY+175 + height);
+    ctx.lineTo(rectX, rectY+175 + height / 2);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.fillStyle = "white";
     let squareSize = 120;
     let squareSpacing = 20;
     let squarePadding = 10;
@@ -143,42 +166,6 @@ let waterTempGauge = new JustGage({
     ctx.strokeRect(leftSquareX - 90, squareY, squareSize + 2 * squarePadding + 90, squareSize + 2 * squarePadding);
     ctx.strokeRect(rightSquareX, squareY, squareSize + 2 * squarePadding + 90, squareSize + 2 * squarePadding);
 
-    let labelFontSize = 30;
-    ctx.font = labelFontSize + "px Arial";
-    let widget_offset = 45;
-
-    let leftLabelText = "OIL TEMP";
-    let leftLabelTextWidth = ctx.measureText(leftLabelText).width;
-    let leftLabelX = leftSquareX + (squareSize + 2 * squarePadding - leftLabelTextWidth) / 2 - widget_offset;
-    let leftLabelY = squareY + squarePadding + labelFontSize;
-
-    let rightLabelText = "WATER TEMP";
-    let rightLabelTextWidth = ctx.measureText(rightLabelText).width;
-    let rightLabelX = rightSquareX + (squareSize + 2 * squarePadding - rightLabelTextWidth) / 2 + widget_offset;
-    let rightLabelY = squareY + squarePadding + labelFontSize;
-
-    ctx.fillStyle = "white";
-    ctx.fillText(leftLabelText, leftLabelX, leftLabelY);
-    ctx.fillText(rightLabelText, rightLabelX, rightLabelY);
-
-    let valueFontSize = 80;
-    ctx.font = valueFontSize + "px Arial";
-
-    let oilValueText = OIL_V.toString();
-    let oilValueTextWidth = ctx.measureText(oilValueText).width;
-    let oilValueX = leftSquareX + (squareSize + 2 * squarePadding - oilValueTextWidth) / 2 - widget_offset;
-    let oilValueY = squareY + squarePadding + squareSize / 2 + valueFontSize / 3 + 20;
-
-    let waterValueText = WATER_V.toString();
-    let waterValueTextWidth = ctx.measureText(waterValueText).width;
-    let waterValueX = rightSquareX + (squareSize + 2 * squarePadding - waterValueTextWidth) / 2 + widget_offset;
-    let waterValueY = squareY + squarePadding + squareSize / 2 + valueFontSize / 3 + 20;
-
-    ctx.fillText(oilValueText, oilValueX, oilValueY);
-    ctx.fillText(waterValueText, waterValueX, waterValueY);
-
-
-
     let newSquareY = squareY + squareSize + 30;  // dodajemy 30 pikseli odstępu
 
     // Rysowanie dodatkowej lewej ramki
@@ -186,6 +173,65 @@ let waterTempGauge = new JustGage({
 
     // Rysowanie dodatkowej prawej ramki
     ctx.strokeRect(rightSquareX, newSquareY, squareSize + 2 * squarePadding+90, squareSize + 2 * squarePadding);
+
+
+    if(OIL_V>=120){
+    //Rysuj warning
+        ctx.fillStyle = "red";
+        ctx.fillRect(0, 450, 1024, 300); // x, y, szerokość, wysokość
+        ctx.fillStyle = "black";
+        ctx.font = "66px Arial";
+        ctx.fillText("WARNING: HIGH OIL TEMP", 70, 545); // tekst, x, y
+        ctx.fillStyle = "red";
+
+    }
+    let labelFontSize = 30;
+    ctx.font = labelFontSize + "px Arial";
+    let widget_offset = 45;
+    let leftLabelText = "OIL TEMP";
+    let leftLabelTextWidth = ctx.measureText(leftLabelText).width;
+    let leftLabelX = leftSquareX + (squareSize + 2 * squarePadding - leftLabelTextWidth) / 2 - widget_offset;
+    let leftLabelY = squareY + squarePadding + labelFontSize;
+    ctx.fillText(leftLabelText, leftLabelX, leftLabelY);
+    let valueFontSize = 80;
+    ctx.font = valueFontSize + "px Arial";
+
+    let oilValueText = OIL_V.toString();
+    let oilValueTextWidth = ctx.measureText(oilValueText).width;
+    let oilValueX = leftSquareX + (squareSize + 2 * squarePadding - oilValueTextWidth) / 2 - widget_offset;
+    let oilValueY = squareY + squarePadding + squareSize / 2 + valueFontSize / 3 + 20;
+    ctx.fillText(oilValueText, oilValueX, oilValueY);
+
+    ctx.fillStyle = "white";
+
+    if(WATER_V>=105){
+    //Rysuj warning
+        ctx.fillStyle = "red";
+        ctx.fillRect(0, 450, 1024, 300); // x, y, szerokość, wysokość
+        ctx.fillStyle = "black";
+        ctx.font = "66px Arial";
+        ctx.fillText("WARNING: HIGH WATER TEMP", 20, 545); // tekst, x, y
+        ctx.fillStyle = "red";
+
+    }
+    ctx.font = labelFontSize + "px Arial";
+    let rightLabelText = "WATER TEMP";
+    let rightLabelTextWidth = ctx.measureText(rightLabelText).width;
+    let rightLabelX = rightSquareX + (squareSize + 2 * squarePadding - rightLabelTextWidth) / 2 + widget_offset;
+    let rightLabelY = squareY + squarePadding + labelFontSize;
+
+
+    ctx.fillText(rightLabelText, rightLabelX, rightLabelY);
+    ctx.font = valueFontSize + "px Arial";
+    let waterValueText = WATER_V.toString();
+    let waterValueTextWidth = ctx.measureText(waterValueText).width;
+    let waterValueX = rightSquareX + (squareSize + 2 * squarePadding - waterValueTextWidth) / 2 + widget_offset;
+    let waterValueY = squareY + squarePadding + squareSize / 2 + valueFontSize / 3 + 20;
+    ctx.fillText(waterValueText, waterValueX, waterValueY);
+
+    ctx.fillStyle = "white";
+
+
 
 
 }
@@ -198,6 +244,8 @@ socket.on('update', (data) => {
     RPM_V=parsedData.RPM
     SPEED_V=parsedData.SPEED
     WATER_V=parsedData.WATER
+    colorL=parsedData.LEFT
+    colorR=parsedData.RIGHT
     OIL_V=parsedData.OIL //do zrobienia w python
     console.log(data)
     //waterTempGauge.refresh(parsedData.Water);
