@@ -1,21 +1,24 @@
 const socket = io();
-/*
 
-let waterTempGauge = new JustGage({
-    id: "waterTempGauge",
-    value: 0,
-    min: 0,
-    max: 120,
-    title: "Temperatura Wody",
-    label: "°C"
-});
-*/
         let RPM_V=0
         var canvasWidth = 1024
         var canvasHeight = 600
         var RPMYPosition = 75
         var RPMXPosition = 100
+        var check_x=400
+        var check_y=400
         var interval = setInterval(updateCanvas, 20)
+        let check_orange = new Image();
+        check_orange.src = 'images/checkengine_orange.png'; // Ścieżka do obrazka
+        let check_gray = new Image();
+        check_gray.src = 'images/checkengine_gray.png'; // Ścieżka do obrazka
+        let no_beams = new Image();
+        no_beams.src = 'images/no_beams.png'; // Ścieżka do obrazka
+        let low_beams = new Image();
+        low_beams.src = 'images/low_beams.png'; // Ścieżka do obrazka
+        let high_beams = new Image();
+        high_beams.src = 'images/high_beams.png'; // Ścieżka do obrazka
+
         function startDash() {
             mainCanvas.start()
             RPM = new createRPM(0,70)
@@ -56,9 +59,12 @@ let waterTempGauge = new JustGage({
 
             }
 
+    function DrawRPM(){
 
 
-   function updateCanvas() {
+    }
+
+    function updateCanvas() {
     ctx = mainCanvas.context;
     ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 
@@ -138,7 +144,7 @@ let waterTempGauge = new JustGage({
     width=40
     height=40
     //Prawo
-    ctx.fillStyle = colorR;
+    ctx.fillStyle = COLOR_R;
     ctx.beginPath();
     ctx.moveTo(rectX+255, rectY+175);
     ctx.lineTo(rectX+255, rectY+175 + height);
@@ -146,7 +152,7 @@ let waterTempGauge = new JustGage({
     ctx.closePath();
     ctx.fill();
     //Lewo
-    ctx.fillStyle = colorL;
+    ctx.fillStyle = COLOR_L;
     ctx.beginPath();
     ctx.moveTo(rectX + width, rectY+175);
     ctx.lineTo(rectX + width, rectY+175 + height);
@@ -230,7 +236,22 @@ let waterTempGauge = new JustGage({
     ctx.fillText(waterValueText, waterValueX, waterValueY);
 
     ctx.fillStyle = "white";
+////CHECK ENGINE
+    ctx.drawImage(check_gray, check_x, check_y,65,65);
 
+
+
+    if(CHECK_S==="true"){
+         ctx.drawImage(check_orange, check_x, check_y,65,65);
+    }
+    if(LIGHTS_S==="low"){
+         ctx.drawImage(low_beams, check_x+75, check_y+6,53,53);
+    }
+    else if(LIGHTS_S==="high"){
+         ctx.drawImage(high_beams, check_x+75, check_y+6,53,53);
+    }else{
+        ctx.drawImage(no_beams, check_x+75, check_y+6,53,53);
+    }
 
 
 
@@ -244,9 +265,13 @@ socket.on('update', (data) => {
     RPM_V=parsedData.RPM
     SPEED_V=parsedData.SPEED
     WATER_V=parsedData.WATER
-    colorL=parsedData.LEFT
-    colorR=parsedData.RIGHT
+    FUEL_V=parsedData.FUEL
+    COLOR_L=parsedData.LEFT
+    COLOR_R=parsedData.RIGHT
     OIL_V=parsedData.OIL //do zrobienia w python
+    CHECK_S=parsedData.CHECKENGINE
+    LIGHTS_S=parsedData.LIGHTS
+    
     console.log(data)
     //waterTempGauge.refresh(parsedData.Water);
 });
