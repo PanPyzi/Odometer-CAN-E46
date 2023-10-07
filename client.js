@@ -253,14 +253,62 @@ const socket = io();
         ctx.drawImage(no_beams, check_x+75, check_y+6,53,53);
     }
 
+    let fuelBarX = rightSquareX + squarePadding; // Pozycja X paska paliwa
+    let fuelBarY = newSquareY + squarePadding + 80; // Pozycja Y paska paliwa
+    let maxFuelBarLength = squareSize*2 -(2*squarePadding+10) ; // Maksymalna długość paska paliwa
+    let fuelBarHeight = 40; // Wysokość paska paliwa
 
+    // Oblicz długość paska paliwa na podstawie FUEL_V i maksymalnej wartości
+    let fuelBarLength = (FUEL_V / 100) * maxFuelBarLength;
 
+    // Rysuj tło paska paliwa
+    ctx.fillStyle = "gray";
+    ctx.fillRect(fuelBarX, fuelBarY, maxFuelBarLength, fuelBarHeight);
+
+    // Rysuj pasek paliwa
+    ctx.fillStyle = "yellow";
+    ctx.fillRect(fuelBarX, fuelBarY, fuelBarLength, fuelBarHeight);
+
+    // Rysuj podziałki paska paliwa
+    numberOfTicks = 3; // Liczba głównych podziałek (Full, 1/2, Empty)
+    tickSpacing = maxFuelBarLength / (numberOfTicks - 1); // Odstęp między podziałkami
+    textOffsetY = -15; // Odstęp tekstu od linii podziałki
+
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = "white";
+    ctx.fillStyle = "white";
+    ctx.font = "20px Arial";
+
+    for (let i = 0; i < numberOfTicks; i++) {
+        let xPos = fuelBarX + i * tickSpacing;
+
+        // Rysuj główną podziałkę
+        ctx.beginPath();
+        ctx.moveTo(xPos, fuelBarY - 10);
+        ctx.lineTo(xPos, fuelBarY + fuelBarHeight +5);
+        ctx.stroke();
+
+        // Rysuj etykiety dla głównych podziałek
+        let labels = ["E", "1/2", "F"];
+        let labelText = labels[i];
+        let labelTextWidth = ctx.measureText(labelText).width;
+        ctx.fillText(labelText, xPos - labelTextWidth / 2, fuelBarY + textOffsetY);
+    }
+
+    let fuelLabelX = rightSquareX + squarePadding; // Pozycja X etykiety paliwa
+    let fuelLabelY = newSquareY + squarePadding;  // Pozycja Y etykiety paliwa
+
+    // Rysuj etykietę wskaźnika paliwa
+    ctx.fillStyle = "white";
+    ctx.font = "30px Arial";  // Możesz dostosować rozmiar czcionki
+    ctx.fillText("FUEL", fuelLabelX+65, fuelLabelY+25);
 }
 
 
 startDash()
 
 socket.on('update', (data) => {
+    console.log("Otrzymane dane: ", data);
     let parsedData = JSON.parse(data);
     RPM_V=parsedData.RPM
     SPEED_V=parsedData.SPEED
@@ -271,7 +319,5 @@ socket.on('update', (data) => {
     OIL_V=parsedData.OIL //do zrobienia w python
     CHECK_S=parsedData.CHECKENGINE
     LIGHTS_S=parsedData.LIGHTS
-    
-    console.log(data)
     //waterTempGauge.refresh(parsedData.Water);
 });

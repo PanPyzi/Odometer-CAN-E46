@@ -8,6 +8,17 @@ socket = CanRawSocket(interface=interface)
 
 
 def read():
+    data = {
+        "SPEED": 299,
+        "RPM": 0,
+        "WATER": 100,
+        "OIL": 100,
+        "RIGHT": "gray",
+        "LEFT": "gray",
+        "CHECKENGINE": "true",
+        "LIGHTS": "0",
+        "FUEL": "60"
+    }
     SPEED_S=0
     THROTTLE_P=0
     RPM_D = 0
@@ -60,6 +71,12 @@ def read():
             "SPEED": SPEED_S,
             "RPM": RPM_D,
             "WATER": WATER_T,
+            "OIL": 100,
+            "RIGHT": "gray",
+            "LEFT": "gray",
+            "CHECKENGINE": "true",
+            "LIGHTS": "0",
+            "FUEL": "60"
         }
         print(json.dumps(data))
 
